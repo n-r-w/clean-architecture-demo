@@ -53,7 +53,7 @@ func (info *restInfo) getLogRecords() http.HandlerFunc {
 		}
 
 		records, _, err := info.log.Find(req.TimeFrom, req.TimeTo, info.maxLogRecordsResult)
-		if err != nil || records == nil {
+		if err != nil {
 			info.controller.RespondError(w, http.StatusInternalServerError, err)
 
 			return

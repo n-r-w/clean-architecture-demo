@@ -60,7 +60,7 @@ func Start(cfg *config.Config, logger logger.Interface) {
 	err = httpServer.Shutdown()
 	if err != nil {
 		logger.Error("shutdown error: %v", err)
+	} else {
+		logger.Info("shutdown ok")
 	}
-
-	logger.Info("shutdown ok")
 }

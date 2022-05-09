@@ -11,7 +11,7 @@ SESSION_AGE = 9999
 # уровень отладки
 LOG_LEVEL = "debug"
 # строка подключения к БД
-DATABASE_URL = "host=localhost user=postgres password=1 port=5433 dbname=kp_logs sslmode=disable connect_timeout=5000 statement_timeout=5000"
+DATABASE_URL = "host=localhost user=postgres password=1 port=5433 dbname=kp_logs sslmode=disable connect_timeout=15000 statement_timeout=15000"
 # Максимальное количество сессий БД
 MAX_DB_SESSIONS = 800
 # Время жизни незадействованного соединения к БД
