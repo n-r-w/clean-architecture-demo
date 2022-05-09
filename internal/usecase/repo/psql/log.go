@@ -41,7 +41,7 @@ func (p *LogRepo) Insert(records []entity.LogRecord) error {
 	return err
 }
 
-func (p *LogRepo) Find(dateFrom time.Time, dateTo time.Time, limit int) (records []entity.LogRecord, limited bool, err error) {
+func (p *LogRepo) Find(dateFrom time.Time, dateTo time.Time, limit uint) (records []entity.LogRecord, limited bool, err error) {
 	rows, err := p.Pool.Query(context.Background(),
 		`SELECT id, record_timestamp, real_timestamp, level,  message1, COALESCE(message2, ''), COALESCE(message3, '') 
 		FROM log
@@ -76,7 +76,7 @@ func (p *LogRepo) Find(dateFrom time.Time, dateTo time.Time, limit int) (records
 
 		if rowCount > uint64(p.maxLogRecordsResult) {
 			err := fmt.Errorf("too many records, max %d", p.maxLogRecordsResult)
-			
+
 			return nil, false, err
 		}
 

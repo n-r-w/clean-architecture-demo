@@ -29,21 +29,23 @@ const (
 )
 
 type restInfo struct {
-	controller   httpcontroller.Interface
-	user         usecase.User
-	log          usecase.Log
-	superAdminID uint64
-	sessionAge   uint
+	controller          httpcontroller.Interface
+	user                usecase.User
+	log                 usecase.Log
+	superAdminID        uint64
+	sessionAge          uint
+	maxLogRecordsResult uint
 }
 
 // InitRoutes Инициализация маршрутов
-func InitRoutes(controller httpcontroller.Interface, superAdminID uint64, sessionAge uint, user usecase.User, log usecase.Log) {
+func InitRoutes(controller httpcontroller.Interface, superAdminID uint64, sessionAge uint, user usecase.User, log usecase.Log, maxLogRecordsResult uint) {
 	i := &restInfo{
-		controller:   controller,
-		user:         user,
-		log:          log,
-		superAdminID: superAdminID,
-		sessionAge:   sessionAge,
+		controller:          controller,
+		user:                user,
+		log:                 log,
+		superAdminID:        superAdminID,
+		sessionAge:          sessionAge,
+		maxLogRecordsResult: maxLogRecordsResult,
 	}
 
 	// логин

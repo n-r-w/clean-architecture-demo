@@ -35,7 +35,7 @@ func Start(cfg *config.Config, logger logger.Interface) {
 	logCase := usecase.NewLogCase(logRepo)
 
 	// создаем маршрутизатор запросов
-	rt := router.NewRouter(logger, userCase, logCase, cfg.SessionEncriptionKey, cfg.SuperAdminID, cfg.SessionAge)
+	rt := router.NewRouter(logger, userCase, logCase, cfg.SessionEncriptionKey, cfg.SuperAdminID, cfg.SessionAge, cfg.MaxLogRecordsResult)
 
 	// запускаем http сервер
 	httpServer := httpserver.New(rt.Handler(), logger,

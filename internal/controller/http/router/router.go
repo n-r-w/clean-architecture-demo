@@ -43,7 +43,7 @@ type Router struct {
 	subrouters map[string]*mux.Router
 }
 
-func NewRouter(logger logger.Interface, user usecase.User, log usecase.Log, sessionEncriptionKey string, superAdminID uint64, sessionAge uint) *Router {
+func NewRouter(logger logger.Interface, user usecase.User, log usecase.Log, sessionEncriptionKey string, superAdminID uint64, sessionAge uint, maxLogRecordsResult uint) *Router {
 	r := &Router{
 		mux:          mux.NewRouter(),
 		sessionStore: sessions.NewCookieStore([]byte(sessionEncriptionKey)),
@@ -62,7 +62,7 @@ func NewRouter(logger logger.Interface, user usecase.User, log usecase.Log, sess
 	r.mux.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"})))
 
 	// создаем маршруты для rest
-	rest.InitRoutes(r, superAdminID, sessionAge, user, log)
+	rest.InitRoutes(r, superAdminID, sessionAge, user, log, maxLogRecordsResult)
 
 	return r
 }
@@ -130,6 +130,7 @@ func (router *Router) RespondCompressed(w http.ResponseWriter, r *http.Request, 
 	var sourceData []byte
 	switch d := data.(type) {
 	case string:
+	case []byte:
 		sourceData = []byte(d)
 	default:
 		var errJSON error
@@ -175,8 +176,8 @@ func (router *Router) AddRoute(subroute string, route string, handler http.Handl
 // AddMiddleware ...
 func (router *Router) AddMiddleware(subroute string, mwf ...httpcontroller.MiddlewareFunc) {
 	funcs := make([]mux.MiddlewareFunc, len(mwf))
-	for _, f := range mwf {
-		funcs = append(funcs, func(h http.Handler) http.Handler { return f(h) })
+	for i, f := range mwf {
+		funcs[i] = func(h http.Handler) http.Handler { return f(h) }
 	}
 
 	if len(subroute) == 0 {
