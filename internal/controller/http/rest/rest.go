@@ -1,3 +1,4 @@
+// Package rest ...
 package rest
 
 import (
@@ -14,11 +15,12 @@ var (
 	errNotAdmin         = errors.New("not admin")
 )
 
-type CtxKeyUser string // задаем свой тип, чтобы была возможность отличить что лежит в переменной any
+// задаем свой тип, чтобы была возможность отличить что лежит в переменной any
+type ctxKey string
 
 const (
 	// Ключ для хранения модели пользователя в контексте запроса после успешной аунтетификации
-	ctxKeyUser = CtxKeyUser("rest-user")
+	ctxKeyUser = ctxKey("rest-user")
 
 	// Имя хедера REST запроса, в котором клиент указывает в каком виде он желает получить ответ
 	binaryFormatHeaderName = "binary-format"
@@ -34,6 +36,7 @@ type restInfo struct {
 	sessionAge   uint
 }
 
+// InitRoutes Инициализация маршрутов
 func InitRoutes(controller httpcontroller.Interface, superAdminID uint64, sessionAge uint, user usecase.User, log usecase.Log) {
 	i := &restInfo{
 		controller:   controller,

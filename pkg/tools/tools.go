@@ -1,4 +1,4 @@
-// Package tool Различные фукции общего назначения
+// Package tools Различные фукции общего назначения
 package tools
 
 import (
@@ -40,7 +40,7 @@ func RequiredIf(cond bool) validation.RuleFunc {
 	}
 }
 
-// Сжатие массива данных
+// CompressData Сжатие массива данных
 func CompressData(deflateCompression bool, data []byte) (resData []byte, err error) {
 	if data == nil {
 		return []byte{}, nil

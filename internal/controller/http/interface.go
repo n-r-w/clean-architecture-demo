@@ -1,3 +1,4 @@
+// Package httpcontroller ...
 package httpcontroller
 
 import (
@@ -7,7 +8,8 @@ import (
 type CompressionType int
 
 const (
-	CompressionGzip = CompressionType(iota)
+	CompressionNo = CompressionType(iota)
+	CompressionGzip
 	CompressionDeflate
 )
 
@@ -16,13 +18,13 @@ type MiddlewareFunc func(next http.Handler) http.Handler
 // Interface - интерфейс http контроллера
 // Создан для исключения зависимости обработчиков запросов от используемого роутера
 type Interface interface {
-	/* RespondData - ответ на запрос
-	data содержит []byte или указатель на объект. Во втором случае этот объект преобразуется в JSON */
+	// RespondData - ответ на запрос
+	// data содержит []byte или указатель на объект. Во втором случае этот объект преобразуется в JSON */
 	RespondData(w http.ResponseWriter, code int, data interface{})
-	/* RespondCompressed - ответ на запрос
-	data содержит []byte или указатель на объект. Во втором случае этот объект преобразуется в JSON.
-	Дополнительно проверяет заголовок запроса на "Accept-Encoding" и решает сжимать ли ответ на самом деле,
-	т.е. в итоге ответ может быть и без сжатия */
+	// RespondCompressed - ответ на запрос
+	// data содержит []byte или указатель на объект. Во втором случае этот объект преобразуется в JSON.
+	// Дополнительно проверяет заголовок запроса на "Accept-Encoding" и решает сжимать ли ответ на самом деле,
+	// т.е. в итоге ответ может быть и без сжатия
 	RespondCompressed(w http.ResponseWriter, r *http.Request, code int, ctype CompressionType, data interface{})
 	// RespondError - возврат ошибки
 	RespondError(w http.ResponseWriter, code int, err error)

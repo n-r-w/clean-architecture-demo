@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	logger := logger.New()
+	lg := logger.New()
 
 	var configPath string
 	// описание флагов командной строки
@@ -19,12 +19,12 @@ func main() {
 	flag.Parse()
 
 	// читаем конфиг
-	config, err := config.New(configPath)
+	cfg, err := config.New(configPath)
 	if err != nil {
-		logger.Fatal("read config error %v", err)
+		lg.Fatal("read config error %v", err)
 
 		return
 	}
 
-	app.Start(config, logger)
+	app.Start(cfg, lg)
 }

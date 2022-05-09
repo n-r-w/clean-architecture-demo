@@ -1,3 +1,4 @@
+// Package router ...
 package router
 
 import (
@@ -23,11 +24,11 @@ import (
 type contextKey string
 
 const (
-	// SessionName Ключ для хранения информации о сессии со стороны пользователя
+	// Ключ для хранения информации о сессии со стороны пользователя
 	sessionName = "logserver"
-	// UserIDKeyName Ключ для хранения id пользователя в сессии (в куках)
+	// Ключ для хранения id пользователя в сессии (в куках)
 	userIDKeyName = "user_id"
-
+	// Ключ для хранения номера сессии в контексте запроса
 	ctxKeyRequestID = contextKey("request-id")
 )
 
@@ -70,12 +71,12 @@ func (router *Router) Handler() http.Handler {
 	return router.mux
 }
 
-// Ответ с ошибкой
+// RespondError Ответ с ошибкой
 func (router *Router) RespondError(w http.ResponseWriter, code int, err error) {
 	router.RespondData(w, code, map[string]string{"error": err.Error()})
 }
 
-// Ответ на запрос без сжатия
+// RespondData Ответ на запрос без сжатия
 func (router *Router) RespondData(w http.ResponseWriter, code int, data interface{}) {
 	if code > 0 {
 		w.WriteHeader(code)
@@ -101,7 +102,7 @@ func (router *Router) RespondData(w http.ResponseWriter, code int, data interfac
 	}
 }
 
-// Ответ на запрос со сжатием если его поддерживает клиент
+// RespondCompressed Ответ на запрос со сжатием если его поддерживает клиент
 func (router *Router) RespondCompressed(w http.ResponseWriter, r *http.Request, code int, ctype httpcontroller.CompressionType, data interface{}) {
 	if data == nil {
 		router.RespondData(w, code, data)
@@ -110,11 +111,16 @@ func (router *Router) RespondCompressed(w http.ResponseWriter, r *http.Request, 
 	}
 
 	// проверяем хочет ли клиент сжатие
-	accepted := strings.Split(r.Header.Get("Accept-Encoding"), ",")
-	gzipCompression := slices.Contains(accepted, "gzip")
-	deflateCompression := !gzipCompression && slices.Contains(accepted, "deflate")
+	compressionType := httpcontroller.CompressionNo
 
-	if !gzipCompression && !deflateCompression {
+	accepted := strings.Split(r.Header.Get("Accept-Encoding"), ",")
+	if slices.Contains(accepted, "gzip") && ctype == httpcontroller.CompressionGzip {
+		compressionType = httpcontroller.CompressionGzip
+	} else if slices.Contains(accepted, "deflate") && ctype == httpcontroller.CompressionDeflate {
+		compressionType = httpcontroller.CompressionDeflate
+	}
+
+	if compressionType == httpcontroller.CompressionNo {
 		router.RespondData(w, code, data)
 
 		return
@@ -136,13 +142,13 @@ func (router *Router) RespondCompressed(w http.ResponseWriter, r *http.Request, 
 		w.Header().Set("Content-Type", "application/json")
 	}
 
-	if deflateCompression {
-		w.Header().Set("Content-Encoding", "deflate")
-	} else {
+	if compressionType == httpcontroller.CompressionGzip {
 		w.Header().Set("Content-Encoding", "gzip")
+	} else {
+		w.Header().Set("Content-Encoding", "deflate")
 	}
 
-	compressedData, err := tools.CompressData(deflateCompression, sourceData)
+	compressedData, err := tools.CompressData(compressionType == httpcontroller.CompressionDeflate, sourceData)
 
 	if err != nil {
 		router.RespondError(w, http.StatusInternalServerError, err)
@@ -154,6 +160,7 @@ func (router *Router) RespondCompressed(w http.ResponseWriter, r *http.Request, 
 	_, _ = w.Write(compressedData)
 }
 
+// AddRoute ...
 func (router *Router) AddRoute(subroute string, route string, handler http.HandlerFunc, methods ...string) {
 	var r *mux.Router
 	if len(subroute) == 0 {
@@ -165,8 +172,9 @@ func (router *Router) AddRoute(subroute string, route string, handler http.Handl
 	r.HandleFunc(route, handler).Methods(methods...)
 }
 
+// AddMiddleware ...
 func (router *Router) AddMiddleware(subroute string, mwf ...httpcontroller.MiddlewareFunc) {
-	var funcs []mux.MiddlewareFunc
+	funcs := make([]mux.MiddlewareFunc, len(mwf))
 	for _, f := range mwf {
 		funcs = append(funcs, func(h http.Handler) http.Handler { return f(h) })
 	}
@@ -178,6 +186,7 @@ func (router *Router) AddMiddleware(subroute string, mwf ...httpcontroller.Middl
 	}
 }
 
+// StartSession ...
 func (router *Router) StartSession(w http.ResponseWriter, r *http.Request, userID uint64, sessionAge uint) error {
 	// получаем сесиию
 	session, err := router.sessionStore.New(r, sessionName)
@@ -201,7 +210,7 @@ func (router *Router) StartSession(w http.ResponseWriter, r *http.Request, userI
 }
 
 func (router *Router) CheckSession(r *http.Request) (userID uint64, err error) {
-	// извлекаем из запроса пользователя куки с инфорамацией о сессии
+	// извлекаем из запроса пользователя куки с информацией о сессии
 	session, err := router.sessionStore.Get(r, sessionName)
 	if err != nil {
 		return 0, err
@@ -221,6 +230,7 @@ func (router *Router) CloseSession(w http.ResponseWriter, r *http.Request) {
 	session, err := router.sessionStore.Get(r, sessionName)
 	if err != nil {
 		router.logger.Error("session store get error %v", err)
+
 		return
 	}
 	if session == nil {
@@ -241,5 +251,6 @@ func (router *Router) getSubrouter(path string) *mux.Router {
 		sr = router.mux.PathPrefix(path).Subrouter()
 		router.subrouters[path] = sr
 	}
+
 	return sr
 }

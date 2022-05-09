@@ -70,11 +70,13 @@ func (p *LogRepo) Find(dateFrom time.Time, dateTo time.Time, limit int) (records
 		rowCount++
 		if rowCount > uint64(limit) {
 			limited = true
+
 			break
 		}
 
 		if rowCount > uint64(p.maxLogRecordsResult) {
 			err := fmt.Errorf("too many records, max %d", p.maxLogRecordsResult)
+			
 			return nil, false, err
 		}
 

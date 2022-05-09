@@ -1,7 +1,4 @@
-// Package model Модели данных, относящиеся к пользователю. Сейчас все в одном
-// файле. При большом количестве моделей и операций имеет смысл разбить на
-// несколько файлов или каталогов Сюда не входит операции, связанные с
-// аутентификацие пользователя (логин, выход и т.п.)
+// Package entity ...
 package entity
 
 import (
@@ -9,11 +6,10 @@ import (
 	"strings"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	_ "github.com/go-ozzo/ozzo-validation/v4/is"
 	"github.com/n-r-w/log-server-v2/pkg/tools"
 )
 
-// User Модель пользователя
+// User Сущность "Пользователь"
 type User struct {
 	ID                uint64 `json:"id"`
 	Login             string `json:"login"`
@@ -22,6 +18,7 @@ type User struct {
 	EncryptedPassword string `json:"-"`
 }
 
+// IsEmpty ...
 func (u *User) IsEmpty() bool {
 	return u.ID == 0
 }
@@ -47,6 +44,7 @@ func (u *User) Prepare(sanitize bool) error {
 	if len(u.Password) > 0 {
 		enc, err := tools.EncryptPassword(u.Password)
 		if err != nil {
+
 			return err
 		}
 

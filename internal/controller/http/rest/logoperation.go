@@ -15,7 +15,7 @@ import (
 // Добавить в лог
 func (info *restInfo) addLogRecord() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		req := []entity.LogRecord{}
+		var req []entity.LogRecord
 		// парсим входящий json
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			info.controller.RespondError(w, http.StatusBadRequest, err)

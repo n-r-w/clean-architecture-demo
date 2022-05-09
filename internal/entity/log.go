@@ -1,6 +1,4 @@
-// Package model Модели данных, относящиеся к журналу.
-// Сейчас все в одном файле. При большом количестве моделей и операций
-// имеет смысл разбить на несколько файлов или каталогов
+// Package entity ...
 package entity
 
 import (
@@ -9,6 +7,7 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
+// LogRecord Сущность "Запись в журнале"
 type LogRecord struct {
 	ID       uint64    `json:"id"`
 	LogTime  time.Time `json:"logTime"`
@@ -19,10 +18,12 @@ type LogRecord struct {
 	Message3 string    `json:"message3"`
 }
 
-func (u *LogRecord) IsEmpty() bool {
-	return u.ID == 0
+// IsEmpty ...
+func (l *LogRecord) IsEmpty() bool {
+	return l.ID == 0
 }
 
+// Validate ...
 func (l *LogRecord) Validate() error {
 	return validation.ValidateStruct(
 		l,

@@ -1,10 +1,11 @@
+// Package config ...
 package config
 
 import (
 	"github.com/BurntSushi/toml"
 )
 
-// Конфиг logserver.toml
+// Config logserver.toml
 type Config struct {
 	SuperAdminID            uint64
 	Host                    string `toml:"HOST"`
@@ -35,7 +36,7 @@ const (
 	defaultSessionAge       = 60 * 60 * 24 // 24 часа
 )
 
-// Load Инициализация конфига значениями по умолчанию
+// New Инициализация конфига значениями по умолчанию
 func New(path string) (*Config, error) {
 	c := &Config{
 		SuperAdminID:            superAdminID,

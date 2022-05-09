@@ -1,3 +1,4 @@
+// Package repo ...
 package repo
 
 import (
@@ -7,7 +8,7 @@ import (
 )
 
 type (
-	// UserInterface Интерфейс работы с данными пользователей
+	// User Интерфейс работы с данными пользователей
 	User interface {
 		// Insert добавить нового пользователя. ID прописывается в модель
 		Insert(user entity.User) error
@@ -20,6 +21,7 @@ type (
 		GetUsers() ([]entity.User, error)
 	}
 
+	// Log Интерфейс работы с журналом
 	Log interface {
 		Insert(records []entity.LogRecord) error
 

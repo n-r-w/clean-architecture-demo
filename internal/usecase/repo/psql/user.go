@@ -139,7 +139,7 @@ func (r *UserRepo) FindByID(userID uint64) (entity.User, error) {
 		&u.EncryptedPassword,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return entity.User{}, nil //nolint:nilnil
+			return entity.User{}, nil
 		}
 
 		return entity.User{}, err
@@ -172,7 +172,7 @@ func (r *UserRepo) FindByLogin(login string) (entity.User, error) {
 			&u.EncryptedPassword,
 		); err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
-				return entity.User{}, nil // nolint:nilnil
+				return entity.User{}, nil
 			}
 
 			return entity.User{}, err
@@ -187,6 +187,7 @@ func (r *UserRepo) GetUsers() ([]entity.User, error) {
 	rows, err := r.Pool.Query(context.Background(),
 		`SELECT id, login, name, encrypted_password FROM users`)
 	if err != nil {
+
 		return nil, err
 	}
 	defer rows.Close() // освобождаем контекст sql запроса при выходе
@@ -210,10 +211,12 @@ func (r *UserRepo) GetUsers() ([]entity.User, error) {
 }
 
 func (r *UserRepo) Remove(_ uint64) error {
+
 	return errors.New("not implemeted")
 }
 
 func (r *UserRepo) Update(_ entity.User) error {
+	
 	return errors.New("not implemeted")
 }
 

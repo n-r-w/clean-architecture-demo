@@ -1,3 +1,4 @@
+// Package app ...
 package app
 
 import (
@@ -16,9 +17,8 @@ import (
 )
 
 func Start(cfg *config.Config, logger logger.Interface) {
-
 	// создаем доступ к БД
-	postgres, err := postgres.New(cfg.DatabaseURL, logger)
+	pg, err := postgres.New(cfg.DatabaseURL, logger)
 	if err != nil {
 		logger.Error("postgress error: %v", err)
 
@@ -26,18 +26,19 @@ func Start(cfg *config.Config, logger logger.Interface) {
 	}
 
 	// создаем репозитории
-	userRepo := psql.NewUser(postgres, logger, cfg.SuperAdminID, cfg.SuperAdminLogin, cfg.SuperPassword, cfg.PasswordRegex, cfg.PasswordRegexError)
-	logRepo := psql.NewLog(postgres, cfg.MaxLogRecordsResult)
+	userRepo := psql.NewUser(pg, logger, cfg.SuperAdminID, cfg.SuperAdminLogin, cfg.SuperPassword,
+		cfg.PasswordRegex, cfg.PasswordRegexError)
+	logRepo := psql.NewLog(pg, cfg.MaxLogRecordsResult)
 
 	// создаем сценарии
 	userCase := usecase.NewUserCase(userRepo, cfg.SuperAdminID)
 	logCase := usecase.NewLogCase(logRepo)
 
 	// создаем маршрутизатор запросов
-	router := router.NewRouter(logger, userCase, logCase, cfg.SessionEncriptionKey, cfg.SuperAdminID, cfg.SessionAge)
+	rt := router.NewRouter(logger, userCase, logCase, cfg.SessionEncriptionKey, cfg.SuperAdminID, cfg.SessionAge)
 
 	// запускаем http сервер
-	httpServer := httpserver.New(router.Handler(), logger,
+	httpServer := httpserver.New(rt.Handler(), logger,
 		httpserver.Address(cfg.Host, cfg.Port),
 		httpserver.ReadTimeout(time.Second*time.Duration(cfg.HttpReadTimeout)),
 		httpserver.WriteTimeout(time.Second*time.Duration(cfg.HttpWriteTimeout)),
@@ -50,12 +51,12 @@ func Start(cfg *config.Config, logger logger.Interface) {
 
 	select {
 	case <-interrupt:
-		logger.Info("shutdowning. timeout %d ...", cfg.HttpShutdownTimeout)
+		logger.Info("shutdown, timeout %d ...", cfg.HttpShutdownTimeout)
 	case err = <-httpServer.Notify():
 		logger.Error("http server notification: %v", err)
 	}
 
-	// Shutdown
+	// ждем завершения
 	err = httpServer.Shutdown()
 	if err != nil {
 		logger.Error("shutdown error: %v", err)

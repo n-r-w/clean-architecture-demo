@@ -24,7 +24,7 @@ func (w *responseWriterEx) WriteHeader(statusCode int) {
 }
 
 // Добавляем к контексту уникальный ID сесии с ключом ctxKeyRequestID
-func (info *Router) setRequestID(next http.Handler) http.Handler {
+func (router *Router) setRequestID(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		id := uuid.New().String()
 		w.Header().Set("X-Request-ID", id)
@@ -33,10 +33,10 @@ func (info *Router) setRequestID(next http.Handler) http.Handler {
 }
 
 // Выводим все запросы в журнал
-func (info *Router) logRequest(next http.Handler) http.Handler {
+func (router *Router) logRequest(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// пишем инфу о начале обработки запроса
-		info.logger.Info("addr: %s, id: %s, started %s %s",
+		router.logger.Info("addr: %s, id: %s, started %s %s",
 			r.RemoteAddr,
 			r.Context().Value(ctxKeyRequestID),
 			r.Method,
@@ -71,7 +71,7 @@ func (info *Router) logRequest(next http.Handler) http.Handler {
 			errorText = "-"
 		}
 
-		info.logger.Level(level, "addr: %s, id: %s, completed with %d %s in %v, info: %s",
+		router.logger.Level(level, "addr: %s, id: %s, completed with %d %s in %v, info: %s",
 			r.RemoteAddr,
 			r.Context().Value(ctxKeyRequestID),
 			rw.code,
