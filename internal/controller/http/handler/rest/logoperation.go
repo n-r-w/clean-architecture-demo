@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	httpcontroller "github.com/n-r-w/log-server-v2/internal/controller/http"
+	"github.com/n-r-w/log-server-v2/internal/controller/http/handler"
 	"github.com/n-r-w/log-server-v2/internal/entity"
 	schema_log "github.com/n-r-w/log-server-v2/internal/schema/schema.log"
 	"google.golang.org/protobuf/proto"
@@ -92,12 +92,12 @@ func (info *restInfo) getLogRecords() http.HandlerFunc {
 			}
 
 			w.Header().Add(binaryFormatHeaderName, binaryFormatHeaderProtobuf)
-			info.controller.RespondCompressed(w, r, http.StatusOK, httpcontroller.CompressionGzip, out)
+			info.controller.RespondCompressed(w, r, http.StatusOK, handler.CompressionGzip, out)
 
 			return
 		}
 
 		// отдаем с gzip сжатием если клиент это желает
-		info.controller.RespondCompressed(w, r, http.StatusOK, httpcontroller.CompressionGzip, &records)
+		info.controller.RespondCompressed(w, r, http.StatusOK, handler.CompressionGzip, &records)
 	}
 }

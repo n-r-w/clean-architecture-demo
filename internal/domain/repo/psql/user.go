@@ -7,8 +7,8 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/n-r-w/log-server-v2/internal/domain/repo"
 	"github.com/n-r-w/log-server-v2/internal/entity"
-	"github.com/n-r-w/log-server-v2/internal/usecase/repo"
 	"github.com/n-r-w/log-server-v2/pkg/logger"
 	"github.com/n-r-w/log-server-v2/pkg/postgres"
 	"github.com/n-r-w/log-server-v2/pkg/tools"
@@ -216,7 +216,7 @@ func (r *UserRepo) Remove(_ uint64) error {
 }
 
 func (r *UserRepo) Update(_ entity.User) error {
-	
+
 	return errors.New("not implemeted")
 }
 

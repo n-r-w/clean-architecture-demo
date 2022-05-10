@@ -1,5 +1,4 @@
-// Package repo ...
-package repo
+package usecase
 
 import (
 	"time"
@@ -8,8 +7,8 @@ import (
 )
 
 type (
-	// User Интерфейс работы с данными пользователей
-	User interface {
+	// UserInterface Интерфейс работы с данными пользователей
+	UserInterface interface {
 		// Insert добавить нового пользователя. ID прописывается в модель
 		Insert(user entity.User) error
 		Remove(userID uint64) error
@@ -21,8 +20,8 @@ type (
 		GetUsers() ([]entity.User, error)
 	}
 
-	// Log Интерфейс работы с журналом
-	Log interface {
+	// LogInterface Интерфейс работы с журналом
+	LogInterface interface {
 		Insert(records []entity.LogRecord) error
 
 		Find(dateFrom time.Time, dateTo time.Time, limit uint) (records []entity.LogRecord, limited bool, err error)

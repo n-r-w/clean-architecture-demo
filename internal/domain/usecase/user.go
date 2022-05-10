@@ -9,15 +9,14 @@ import (
 	"strings"
 
 	"github.com/n-r-w/log-server-v2/internal/entity"
-	"github.com/n-r-w/log-server-v2/internal/usecase/repo"
 )
 
 type UserUseCase struct {
-	repo         repo.User
+	repo         UserInterface
 	superAdminID uint64
 }
 
-func NewUserCase(r repo.User, superAdminID uint64) *UserUseCase {
+func NewUserCase(r UserInterface, superAdminID uint64) *UserUseCase {
 	return &UserUseCase{
 		repo:         r,
 		superAdminID: superAdminID,

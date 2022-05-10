@@ -6,14 +6,13 @@ import (
 	"time"
 
 	"github.com/n-r-w/log-server-v2/internal/entity"
-	"github.com/n-r-w/log-server-v2/internal/usecase/repo"
 )
 
 type LogUseCase struct {
-	repo repo.Log
+	repo LogInterface
 }
 
-func NewLogCase(r repo.Log) *LogUseCase {
+func NewLogCase(r LogInterface) *LogUseCase {
 	return &LogUseCase{
 		repo: r,
 	}

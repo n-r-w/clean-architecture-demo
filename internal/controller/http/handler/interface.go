@@ -1,8 +1,11 @@
-// Package httpcontroller ...
-package httpcontroller
+// Package handler ...
+package handler
 
 import (
 	"net/http"
+	"time"
+
+	"github.com/n-r-w/log-server-v2/internal/entity"
 )
 
 type CompressionType int
@@ -15,9 +18,9 @@ const (
 
 type MiddlewareFunc func(next http.Handler) http.Handler
 
-// Interface - интерфейс http контроллера
+// RouterInterface - интерфейс http роутера
 // Создан для исключения зависимости обработчиков запросов от используемого роутера
-type Interface interface {
+type RouterInterface interface {
 	// RespondData - ответ на запрос
 	// data содержит []byte или указатель на объект. Во втором случае этот объект преобразуется в JSON */
 	RespondData(w http.ResponseWriter, code int, data interface{})
@@ -41,3 +44,28 @@ type Interface interface {
 	// CloseSession - закрыть сессию
 	CloseSession(w http.ResponseWriter, r *http.Request)
 }
+
+type (
+	// UserInterface интерфейс, реализуемый юскейсом работы с пользователями
+	UserInterface interface {
+		// CheckPassword Проверить пароль
+		CheckPassword(login string, password string) (ID uint64, err error)
+		// ChangePassword Сменить пароль
+		ChangePassword(currentUser entity.User, login string, password string) (ID uint64, err error)
+
+		Insert(user entity.User) error
+		Remove(id uint64) error
+		Update(user entity.User) error
+
+		FindByID(id uint64) (entity.User, error)
+		FindByLogin(login string) (entity.User, error)
+		GetUsers() ([]entity.User, error)
+	}
+
+	// LogInterface интерфейс, реализуемый юскейсом работы с логами
+	LogInterface interface {
+		Insert(logs []entity.LogRecord) error
+
+		Find(dateFrom time.Time, dateTo time.Time, limit uint) (records []entity.LogRecord, limited bool, err error)
+	}
+)

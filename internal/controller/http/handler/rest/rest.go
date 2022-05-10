@@ -5,9 +5,8 @@ import (
 	"errors"
 	"net/http"
 
-	httpcontroller "github.com/n-r-w/log-server-v2/internal/controller/http"
+	"github.com/n-r-w/log-server-v2/internal/controller/http/handler"
 	"github.com/n-r-w/log-server-v2/internal/entity"
-	"github.com/n-r-w/log-server-v2/internal/usecase/usecase"
 )
 
 var (
@@ -29,16 +28,16 @@ const (
 )
 
 type restInfo struct {
-	controller          httpcontroller.Interface
-	user                usecase.User
-	log                 usecase.Log
+	controller          handler.RouterInterface
+	user                handler.UserInterface
+	log                 handler.LogInterface
 	superAdminID        uint64
 	sessionAge          uint
 	maxLogRecordsResult uint
 }
 
 // InitRoutes Инициализация маршрутов
-func InitRoutes(controller httpcontroller.Interface, superAdminID uint64, sessionAge uint, user usecase.User, log usecase.Log, maxLogRecordsResult uint) {
+func InitRoutes(controller handler.RouterInterface, user handler.UserInterface, log handler.LogInterface, superAdminID uint64, sessionAge uint, maxLogRecordsResult uint) {
 	i := &restInfo{
 		controller:          controller,
 		user:                user,

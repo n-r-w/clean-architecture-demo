@@ -9,8 +9,8 @@ import (
 
 	"github.com/n-r-w/log-server-v2/internal/config"
 	"github.com/n-r-w/log-server-v2/internal/controller/http/router"
-	"github.com/n-r-w/log-server-v2/internal/usecase/repo/psql"
-	"github.com/n-r-w/log-server-v2/internal/usecase/usecase"
+	"github.com/n-r-w/log-server-v2/internal/domain/repo/psql"
+	"github.com/n-r-w/log-server-v2/internal/domain/usecase"
 	"github.com/n-r-w/log-server-v2/pkg/httpserver"
 	"github.com/n-r-w/log-server-v2/pkg/logger"
 	"github.com/n-r-w/log-server-v2/pkg/postgres"

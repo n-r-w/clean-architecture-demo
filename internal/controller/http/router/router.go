@@ -11,9 +11,8 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
-	httpcontroller "github.com/n-r-w/log-server-v2/internal/controller/http"
-	"github.com/n-r-w/log-server-v2/internal/controller/http/rest"
-	"github.com/n-r-w/log-server-v2/internal/usecase/usecase"
+	"github.com/n-r-w/log-server-v2/internal/controller/http/handler"
+	"github.com/n-r-w/log-server-v2/internal/controller/http/handler/rest"
 	"github.com/n-r-w/log-server-v2/pkg/logger"
 	"github.com/n-r-w/log-server-v2/pkg/tools"
 	"golang.org/x/exp/slices"
@@ -32,18 +31,18 @@ const (
 	ctxKeyRequestID = contextKey("request-id")
 )
 
-// Router - реализует интерфейс httpcontroller.Interface
+// Router - реализует интерфейс handler.RouterInterface
 type Router struct {
 	mux          *mux.Router
 	sessionStore sessions.Store // Управление сессиями пользователей
 	logger       logger.Interface
-	user         usecase.User
-	log          usecase.Log
+	user         handler.UserInterface
+	log          handler.LogInterface
 
 	subrouters map[string]*mux.Router
 }
 
-func NewRouter(logger logger.Interface, user usecase.User, log usecase.Log, sessionEncriptionKey string, superAdminID uint64, sessionAge uint, maxLogRecordsResult uint) *Router {
+func NewRouter(logger logger.Interface, user handler.UserInterface, log handler.LogInterface, sessionEncriptionKey string, superAdminID uint64, sessionAge uint, maxLogRecordsResult uint) *Router {
 	r := &Router{
 		mux:          mux.NewRouter(),
 		sessionStore: sessions.NewCookieStore([]byte(sessionEncriptionKey)),
@@ -62,7 +61,7 @@ func NewRouter(logger logger.Interface, user usecase.User, log usecase.Log, sess
 	r.mux.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"})))
 
 	// создаем маршруты для rest
-	rest.InitRoutes(r, superAdminID, sessionAge, user, log, maxLogRecordsResult)
+	rest.InitRoutes(r, user, log, superAdminID, sessionAge, maxLogRecordsResult)
 
 	return r
 }
@@ -103,7 +102,7 @@ func (router *Router) RespondData(w http.ResponseWriter, code int, data interfac
 }
 
 // RespondCompressed Ответ на запрос со сжатием если его поддерживает клиент
-func (router *Router) RespondCompressed(w http.ResponseWriter, r *http.Request, code int, ctype httpcontroller.CompressionType, data interface{}) {
+func (router *Router) RespondCompressed(w http.ResponseWriter, r *http.Request, code int, ctype handler.CompressionType, data interface{}) {
 	if data == nil {
 		router.RespondData(w, code, data)
 
@@ -111,16 +110,16 @@ func (router *Router) RespondCompressed(w http.ResponseWriter, r *http.Request, 
 	}
 
 	// проверяем хочет ли клиент сжатие
-	compressionType := httpcontroller.CompressionNo
+	compressionType := handler.CompressionNo
 
 	accepted := strings.Split(r.Header.Get("Accept-Encoding"), ",")
-	if slices.Contains(accepted, "gzip") && ctype == httpcontroller.CompressionGzip {
-		compressionType = httpcontroller.CompressionGzip
-	} else if slices.Contains(accepted, "deflate") && ctype == httpcontroller.CompressionDeflate {
-		compressionType = httpcontroller.CompressionDeflate
+	if slices.Contains(accepted, "gzip") && ctype == handler.CompressionGzip {
+		compressionType = handler.CompressionGzip
+	} else if slices.Contains(accepted, "deflate") && ctype == handler.CompressionDeflate {
+		compressionType = handler.CompressionDeflate
 	}
 
-	if compressionType == httpcontroller.CompressionNo {
+	if compressionType == handler.CompressionNo {
 		router.RespondData(w, code, data)
 
 		return
@@ -143,13 +142,13 @@ func (router *Router) RespondCompressed(w http.ResponseWriter, r *http.Request, 
 		w.Header().Set("Content-Type", "application/json")
 	}
 
-	if compressionType == httpcontroller.CompressionGzip {
+	if compressionType == handler.CompressionGzip {
 		w.Header().Set("Content-Encoding", "gzip")
 	} else {
 		w.Header().Set("Content-Encoding", "deflate")
 	}
 
-	compressedData, err := tools.CompressData(compressionType == httpcontroller.CompressionDeflate, sourceData)
+	compressedData, err := tools.CompressData(compressionType == handler.CompressionDeflate, sourceData)
 
 	if err != nil {
 		router.RespondError(w, http.StatusInternalServerError, err)
@@ -174,7 +173,7 @@ func (router *Router) AddRoute(subroute string, route string, handler http.Handl
 }
 
 // AddMiddleware ...
-func (router *Router) AddMiddleware(subroute string, mwf ...httpcontroller.MiddlewareFunc) {
+func (router *Router) AddMiddleware(subroute string, mwf ...handler.MiddlewareFunc) {
 	funcs := make([]mux.MiddlewareFunc, len(mwf))
 	for i, f := range mwf {
 		funcs[i] = func(h http.Handler) http.Handler { return f(h) }
