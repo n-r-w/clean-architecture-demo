@@ -8,7 +8,7 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/n-r-w/log-server-v2/internal/entity"
+	"github.com/n-r-w/log-server-v2/internal/domain/entity"
 )
 
 type UserUseCase struct {

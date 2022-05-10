@@ -5,7 +5,7 @@ package usecase
 import (
 	"time"
 
-	"github.com/n-r-w/log-server-v2/internal/entity"
+	"github.com/n-r-w/log-server-v2/internal/domain/entity"
 )
 
 type LogUseCase struct {

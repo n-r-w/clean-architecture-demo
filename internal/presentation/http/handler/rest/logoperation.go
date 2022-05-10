@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/n-r-w/log-server-v2/internal/controller/http/handler"
-	"github.com/n-r-w/log-server-v2/internal/entity"
+	"github.com/n-r-w/log-server-v2/internal/domain/entity"
+	"github.com/n-r-w/log-server-v2/internal/presentation/http/handler"
 	schema_log "github.com/n-r-w/log-server-v2/internal/schema/schema.log"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"

@@ -5,8 +5,8 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/n-r-w/log-server-v2/internal/controller/http/handler"
-	"github.com/n-r-w/log-server-v2/internal/entity"
+	"github.com/n-r-w/log-server-v2/internal/domain/entity"
+	"github.com/n-r-w/log-server-v2/internal/presentation/http/handler"
 )
 
 var (

@@ -3,9 +3,10 @@ package usecase
 import (
 	"time"
 
-	"github.com/n-r-w/log-server-v2/internal/entity"
+	"github.com/n-r-w/log-server-v2/internal/domain/entity"
 )
 
+// Интерфейсы работы с репозиторием. Реализуются в каталоге repo
 type (
 	// UserInterface Интерфейс работы с данными пользователей
 	UserInterface interface {

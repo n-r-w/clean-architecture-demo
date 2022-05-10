@@ -7,8 +7,8 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/n-r-w/log-server-v2/internal/domain/repo"
-	"github.com/n-r-w/log-server-v2/internal/entity"
+	"github.com/n-r-w/log-server-v2/internal/domain/entity"
+	"github.com/n-r-w/log-server-v2/internal/repo"
 	"github.com/n-r-w/log-server-v2/pkg/logger"
 	"github.com/n-r-w/log-server-v2/pkg/postgres"
 	"github.com/n-r-w/log-server-v2/pkg/tools"

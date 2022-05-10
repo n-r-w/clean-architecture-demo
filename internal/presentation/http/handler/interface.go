@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/n-r-w/log-server-v2/internal/entity"
+	"github.com/n-r-w/log-server-v2/internal/domain/entity"
 )
 
 type CompressionType int
@@ -45,6 +45,7 @@ type RouterInterface interface {
 	CloseSession(w http.ResponseWriter, r *http.Request)
 }
 
+// Интерфейсы по работе с доменом (юскейсами). Реализуются в каталоге domain/usecase
 type (
 	// UserInterface интерфейс, реализуемый юскейсом работы с пользователями
 	UserInterface interface {
