@@ -8,21 +8,21 @@ import (
 	"github.com/n-r-w/log-server-v2/internal/domain/entity"
 )
 
-type LogUseCase struct {
+type logUseCase struct {
 	repo LogInterface
 }
 
-func NewLogCase(r LogInterface) *LogUseCase {
-	return &LogUseCase{
+func NewLogCase(r LogInterface) *logUseCase {
+	return &logUseCase{
 		repo: r,
 	}
 }
 
-func (l *LogUseCase) Insert(logs []entity.LogRecord) error {
+func (l *logUseCase) Insert(logs []entity.LogRecord) error {
 	return l.repo.Insert(logs)
 }
 
-func (l *LogUseCase) Find(dateFrom time.Time, dateTo time.Time, limit uint) (records []entity.LogRecord, limited bool, err error) {
+func (l *logUseCase) Find(dateFrom time.Time, dateTo time.Time, limit uint) (records []entity.LogRecord, limited bool, err error) {
 	r, lim, e := l.repo.Find(dateFrom, dateTo, limit)
 	return r, lim, e
 }

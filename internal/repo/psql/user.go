@@ -15,7 +15,7 @@ import (
 	"github.com/omeid/pgerror"
 )
 
-type UserRepo struct {
+type userRepo struct {
 	*postgres.Postgres
 	logger             logger.Interface
 	superAdminID       uint64
@@ -27,8 +27,8 @@ type UserRepo struct {
 }
 
 func NewUser(pg *postgres.Postgres, logger logger.Interface, superAdminID uint64, superAdminLogin string, superAdminPassword string,
-	passwordRegex string, passwordRegexError string) *UserRepo {
-	return &UserRepo{
+	passwordRegex string, passwordRegexError string) *userRepo {
+	return &userRepo{
 		Postgres:           pg,
 		logger:             logger,
 		superAdminID:       superAdminID,
@@ -40,7 +40,7 @@ func NewUser(pg *postgres.Postgres, logger logger.Interface, superAdminID uint64
 }
 
 // Insert Добавить нового пользвателя
-func (r *UserRepo) Insert(user entity.User) error {
+func (r *userRepo) Insert(user entity.User) error {
 	if user.ID == r.superAdminID || strings.EqualFold(user.Login, r.superAdminLogin) {
 		return repo.ErrCantChangeAdminUser
 	}
@@ -71,7 +71,7 @@ func (r *UserRepo) Insert(user entity.User) error {
 }
 
 // ChangePassword Изменить пароль пользователя
-func (r *UserRepo) ChangePassword(userID uint64, password string) error {
+func (r *userRepo) ChangePassword(userID uint64, password string) error {
 	if userID == r.superAdminID {
 		return repo.ErrCantChangeAdminPassword
 	}
@@ -116,7 +116,7 @@ func (r *UserRepo) ChangePassword(userID uint64, password string) error {
 }
 
 // FindByID Поиск пользователя по ID
-func (r *UserRepo) FindByID(userID uint64) (entity.User, error) {
+func (r *userRepo) FindByID(userID uint64) (entity.User, error) {
 	// не админ ли это?
 	if userID == r.superAdminID {
 		return r.AdminUser(), nil
@@ -149,7 +149,7 @@ func (r *UserRepo) FindByID(userID uint64) (entity.User, error) {
 }
 
 // FindByLogin Поиск пользователя по логину
-func (r *UserRepo) FindByLogin(login string) (entity.User, error) {
+func (r *userRepo) FindByLogin(login string) (entity.User, error) {
 	u := entity.User{
 		ID:                0,
 		Login:             "",
@@ -183,7 +183,7 @@ func (r *UserRepo) FindByLogin(login string) (entity.User, error) {
 }
 
 // GetUsers Получить список пользователей
-func (r *UserRepo) GetUsers() ([]entity.User, error) {
+func (r *userRepo) GetUsers() ([]entity.User, error) {
 	rows, err := r.Pool.Query(context.Background(),
 		`SELECT id, login, name, encrypted_password FROM users`)
 	if err != nil {
@@ -210,18 +210,18 @@ func (r *UserRepo) GetUsers() ([]entity.User, error) {
 	return users, nil
 }
 
-func (r *UserRepo) Remove(_ uint64) error {
+func (r *userRepo) Remove(_ uint64) error {
 
 	return errors.New("not implemeted")
 }
 
-func (r *UserRepo) Update(_ entity.User) error {
+func (r *userRepo) Update(_ entity.User) error {
 
 	return errors.New("not implemeted")
 }
 
 // AdminUser - Фейковый пользователь - админ
-func (r *UserRepo) AdminUser() entity.User {
+func (r *userRepo) AdminUser() entity.User {
 	user := entity.User{
 		ID:                r.superAdminID,
 		Name:              "admin",

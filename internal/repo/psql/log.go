@@ -10,19 +10,19 @@ import (
 	"github.com/n-r-w/log-server-v2/pkg/postgres"
 )
 
-type LogRepo struct {
+type logRepo struct {
 	*postgres.Postgres
 	maxLogRecordsResult uint
 }
 
-func NewLog(pg *postgres.Postgres, maxLogRecordsResult uint) *LogRepo {
-	return &LogRepo{
+func NewLog(pg *postgres.Postgres, maxLogRecordsResult uint) *logRepo {
+	return &logRepo{
 		Postgres:            pg,
 		maxLogRecordsResult: maxLogRecordsResult,
 	}
 }
 
-func (p *LogRepo) Insert(records []entity.LogRecord) error {
+func (p *logRepo) Insert(records []entity.LogRecord) error {
 	var sqlText string
 
 	for _, lr := range records {
@@ -41,7 +41,7 @@ func (p *LogRepo) Insert(records []entity.LogRecord) error {
 	return err
 }
 
-func (p *LogRepo) Find(dateFrom time.Time, dateTo time.Time, limit uint) (records []entity.LogRecord, limited bool, err error) {
+func (p *logRepo) Find(dateFrom time.Time, dateTo time.Time, limit uint) (records []entity.LogRecord, limited bool, err error) {
 	rows, err := p.Pool.Query(context.Background(),
 		`SELECT id, record_timestamp, real_timestamp, level,  message1, COALESCE(message2, ''), COALESCE(message3, '') 
 		FROM log
