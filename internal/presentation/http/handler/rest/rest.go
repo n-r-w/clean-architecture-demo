@@ -32,12 +32,12 @@ type restInfo struct {
 	user                handler.UserInterface
 	log                 handler.LogInterface
 	superAdminID        uint64
-	sessionAge          uint
-	maxLogRecordsResult uint
+	sessionAge          int
+	maxLogRecordsResult int
 }
 
 // InitRoutes Инициализация маршрутов
-func InitRoutes(controller handler.RouterInterface, user handler.UserInterface, log handler.LogInterface, superAdminID uint64, sessionAge uint, maxLogRecordsResult uint) {
+func InitRoutes(controller handler.RouterInterface, user handler.UserInterface, log handler.LogInterface, superAdminID uint64, sessionAge int, maxLogRecordsResult int) {
 	i := &restInfo{
 		controller:          controller,
 		user:                user,

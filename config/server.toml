@@ -28,6 +28,10 @@ HTTP_READ_TIMEOUT = 99999
 HTTP_WRITE_TIMEOUT = 99999
 # Таймаут завершения HTTP сервера в секундах
 HTTP_SHUTDOWN_TIMEOUT = 10
+# Максимальное количество запросов в секунду
+RATE_LIMIT = 10000
+# Пиковое максимальное количество запросов в секунду
+RATE_LIMIT_BURST = 20000
 
 # Minimum eight characters, at least one letter and one number:
 # "^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"

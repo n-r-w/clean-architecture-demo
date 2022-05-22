@@ -27,19 +27,19 @@ func Start(cfg *config.Config, logger logger.Interface) {
 	}
 
 	// создаем репозитории
-	userRepo := psql.NewUser(pg, logger, cfg.SuperAdminID, cfg.SuperAdminLogin, cfg.SuperPassword,
+	userRepo := psql.NewUser(pg, logger, uint64(cfg.SuperAdminID), cfg.SuperAdminLogin, cfg.SuperPassword,
 		cfg.PasswordRegex, cfg.PasswordRegexError)
 	logRepo := psql.NewLog(pg, cfg.MaxLogRecordsResult)
 
 	// создаем буфер для асинхронной записи в БД
-	buffer := wbuf.NewDispatcher(uint16(cfg.MaxDbSessions), logRepo, logger)
+	buffer := wbuf.NewDispatcher(cfg.MaxDbSessions, cfg.RateLimit, cfg.RateLimitBurst, logRepo, logger)
 
 	// создаем сценарии
-	userCase := usecase.NewUserCase(userRepo, cfg.SuperAdminID)
+	userCase := usecase.NewUserCase(userRepo, uint64(cfg.SuperAdminID))
 	logCase := usecase.NewLogCase(buffer) // вместо logRepo передаем буфер, т.к. он реализует интерфейс usecase.LogInterface
 
 	// создаем маршрутизатор запросов
-	rt := router.NewRouter(logger, userCase, logCase, cfg.SessionEncriptionKey, cfg.SuperAdminID, cfg.SessionAge, cfg.MaxLogRecordsResult)
+	rt := router.NewRouter(logger, userCase, logCase, cfg.SessionEncriptionKey, uint64(cfg.SuperAdminID), cfg.SessionAge, cfg.MaxLogRecordsResult)
 
 	// запускаем http сервер
 	httpServer := httpserver.New(rt.Handler(), logger,

@@ -22,7 +22,7 @@ func (l *logUseCase) Insert(logs []entity.LogRecord) error {
 	return l.repo.Insert(logs)
 }
 
-func (l *logUseCase) Find(dateFrom time.Time, dateTo time.Time, limit uint) (records []entity.LogRecord, limited bool, err error) {
+func (l *logUseCase) Find(dateFrom time.Time, dateTo time.Time, limit int) (records []entity.LogRecord, limited bool, err error) {
 	r, lim, e := l.repo.Find(dateFrom, dateTo, limit)
 	return r, lim, e
 }

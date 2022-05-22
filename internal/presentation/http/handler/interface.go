@@ -38,7 +38,7 @@ type RouterInterface interface {
 	AddMiddleware(subroute string, mwf ...MiddlewareFunc)
 
 	// StartSession - запомнить новую сессию после логина
-	StartSession(w http.ResponseWriter, r *http.Request, userID uint64, sessionAge uint) error
+	StartSession(w http.ResponseWriter, r *http.Request, userID uint64, sessionAge int) error
 	// CheckSession - проверить залогинен ли пользователь
 	CheckSession(*http.Request) (userID uint64, err error)
 	// CloseSession - закрыть сессию
@@ -67,6 +67,6 @@ type (
 	LogInterface interface {
 		Insert(logs []entity.LogRecord) error
 
-		Find(dateFrom time.Time, dateTo time.Time, limit uint) (records []entity.LogRecord, limited bool, err error)
+		Find(dateFrom time.Time, dateTo time.Time, limit int) (records []entity.LogRecord, limited bool, err error)
 	}
 )

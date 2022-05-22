@@ -25,6 +25,6 @@ type (
 	LogInterface interface {
 		Insert(records []entity.LogRecord) error
 
-		Find(dateFrom time.Time, dateTo time.Time, limit uint) (records []entity.LogRecord, limited bool, err error)
+		Find(dateFrom time.Time, dateTo time.Time, limit int) (records []entity.LogRecord, limited bool, err error)
 	}
 )
