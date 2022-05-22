@@ -14,6 +14,8 @@ require (
 
 require (
 	github.com/felixge/httpsnoop v1.0.2 // indirect
+	github.com/gammazero/deque v0.1.0 // indirect
+	github.com/gammazero/workerpool v1.1.2 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/lib/pq v1.10.2 // indirect
 )

@@ -11,6 +11,7 @@ import (
 	"github.com/n-r-w/log-server-v2/internal/domain/usecase"
 	"github.com/n-r-w/log-server-v2/internal/presentation/http/router"
 	"github.com/n-r-w/log-server-v2/internal/repo/psql"
+	"github.com/n-r-w/log-server-v2/internal/repo/wbuf"
 	"github.com/n-r-w/log-server-v2/pkg/httpserver"
 	"github.com/n-r-w/log-server-v2/pkg/logger"
 	"github.com/n-r-w/log-server-v2/pkg/postgres"
@@ -30,9 +31,12 @@ func Start(cfg *config.Config, logger logger.Interface) {
 		cfg.PasswordRegex, cfg.PasswordRegexError)
 	logRepo := psql.NewLog(pg, cfg.MaxLogRecordsResult)
 
+	// создаем буфер для асинхронной записи в БД
+	buffer := wbuf.NewDispatcher(uint16(cfg.MaxDbSessions), 0, logRepo, logger)
+
 	// создаем сценарии
 	userCase := usecase.NewUserCase(userRepo, cfg.SuperAdminID)
-	logCase := usecase.NewLogCase(logRepo)
+	logCase := usecase.NewLogCase(buffer) // вместо logRepo передаем буфер, т.к. он реализует интерфейс usecase.LogInterface
 
 	// создаем маршрутизатор запросов
 	rt := router.NewRouter(logger, userCase, logCase, cfg.SessionEncriptionKey, cfg.SuperAdminID, cfg.SessionAge, cfg.MaxLogRecordsResult)
@@ -58,9 +62,11 @@ func Start(cfg *config.Config, logger logger.Interface) {
 
 	// ждем завершения
 	err = httpServer.Shutdown()
+	buffer.Stop()
 	if err != nil {
 		logger.Error("shutdown error: %v", err)
 	} else {
 		logger.Info("shutdown ok")
 	}
+
 }
