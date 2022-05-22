@@ -25,7 +25,10 @@ func NewDispatcher(workerCount uint16, dbRepo usecase.LogInterface, log logger.I
 
 	go func() {
 		for {
-			d.log.Info("queue size: %d", d.pool.WaitingQueueSize())
+			size := d.pool.WaitingQueueSize()
+			if size > int(workerCount) {
+				d.log.Info("queue size: %d", size)
+			}
 			time.Sleep(time.Second)
 		}
 	}()
@@ -35,6 +38,14 @@ func NewDispatcher(workerCount uint16, dbRepo usecase.LogInterface, log logger.I
 
 // Insert - реализация интерфейса usecase.LogInterface
 func (d *Dispatcher) Insert(records []entity.LogRecord) error {
+	for {
+		if d.pool.WaitingQueueSize() > d.pool.Size()*2 {
+			time.Sleep(time.Millisecond)
+		} else {
+			break
+		}
+	}
+
 	d.pool.Submit(func() {
 		if err := d.dbRepo.Insert(records); err != nil {
 			d.log.Error("worker error: %v", err)
