@@ -11,10 +11,9 @@ import (
 )
 
 type Dispatcher struct {
-	log      logger.Interface
-	dbRepo   usecase.LogInterface
-	stepSize uint8
-	pool     *workerpool.WorkerPool
+	log    logger.Interface
+	dbRepo usecase.LogInterface
+	pool   *workerpool.WorkerPool
 }
 
 func NewDispatcher(workerCount uint16, dbRepo usecase.LogInterface, log logger.Interface) *Dispatcher {
@@ -23,6 +22,13 @@ func NewDispatcher(workerCount uint16, dbRepo usecase.LogInterface, log logger.I
 		dbRepo: dbRepo,
 		pool:   workerpool.New(int(workerCount)),
 	}
+
+	go func() {
+		for {
+			d.log.Info("queue size: %d", d.pool.WaitingQueueSize())
+			time.Sleep(time.Second)
+		}
+	}()
 
 	return d
 }
