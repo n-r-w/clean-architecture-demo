@@ -32,7 +32,7 @@ func Start(cfg *config.Config, logger logger.Interface) {
 	logRepo := psql.NewLog(pg, cfg.MaxLogRecordsResult)
 
 	// создаем буфер для асинхронной записи в БД
-	buffer := wbuf.NewDispatcher(uint16(cfg.MaxDbSessions), 0, logRepo, logger)
+	buffer := wbuf.NewDispatcher(uint16(cfg.MaxDbSessions), logRepo, logger)
 
 	// создаем сценарии
 	userCase := usecase.NewUserCase(userRepo, cfg.SuperAdminID)

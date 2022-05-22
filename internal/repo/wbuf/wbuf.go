@@ -17,12 +17,11 @@ type Dispatcher struct {
 	pool     *workerpool.WorkerPool
 }
 
-func NewDispatcher(workerCount uint16, stepSize uint8, dbRepo usecase.LogInterface, log logger.Interface) *Dispatcher {
+func NewDispatcher(workerCount uint16, dbRepo usecase.LogInterface, log logger.Interface) *Dispatcher {
 	d := &Dispatcher{
-		log:      log,
-		dbRepo:   dbRepo,
-		stepSize: stepSize,
-		pool:     workerpool.New(int(workerCount)),
+		log:    log,
+		dbRepo: dbRepo,
+		pool:   workerpool.New(int(workerCount)),
 	}
 
 	return d
