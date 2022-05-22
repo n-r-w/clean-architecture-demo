@@ -12,10 +12,10 @@ import (
 
 type logRepo struct {
 	*postgres.Postgres
-	maxLogRecordsResult uint
+	maxLogRecordsResult int
 }
 
-func NewLog(pg *postgres.Postgres, maxLogRecordsResult uint) *logRepo {
+func NewLog(pg *postgres.Postgres, maxLogRecordsResult int) *logRepo {
 	return &logRepo{
 		Postgres:            pg,
 		maxLogRecordsResult: maxLogRecordsResult,
@@ -41,7 +41,7 @@ func (p *logRepo) Insert(records []entity.LogRecord) error {
 	return err
 }
 
-func (p *logRepo) Find(dateFrom time.Time, dateTo time.Time, limit uint) (records []entity.LogRecord, limited bool, err error) {
+func (p *logRepo) Find(dateFrom time.Time, dateTo time.Time, limit int) (records []entity.LogRecord, limited bool, err error) {
 	rows, err := p.Pool.Query(context.Background(),
 		`SELECT id, record_timestamp, real_timestamp, level,  message1, COALESCE(message2, ''), COALESCE(message3, '') 
 		FROM log

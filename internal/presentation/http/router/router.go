@@ -42,7 +42,7 @@ type Router struct {
 	subrouters map[string]*mux.Router
 }
 
-func NewRouter(logger logger.Interface, user handler.UserInterface, log handler.LogInterface, sessionEncriptionKey string, superAdminID uint64, sessionAge uint, maxLogRecordsResult uint) *Router {
+func NewRouter(logger logger.Interface, user handler.UserInterface, log handler.LogInterface, sessionEncriptionKey string, superAdminID uint64, sessionAge int, maxLogRecordsResult int) *Router {
 	r := &Router{
 		mux:          mux.NewRouter(),
 		sessionStore: sessions.NewCookieStore([]byte(sessionEncriptionKey)),
@@ -72,32 +72,44 @@ func (router *Router) Handler() http.Handler {
 
 // RespondError Ответ с ошибкой
 func (router *Router) RespondError(w http.ResponseWriter, code int, err error) {
-	router.RespondData(w, code, map[string]string{"error": err.Error()})
+	rw, ok := w.(*responseWriterEx)
+	if !ok {
+		panic("internal error")
+	}
+
+	rw.err = err
+
+	router.RespondData(rw, code, map[string]string{"error": err.Error()})
 }
 
 // RespondData Ответ на запрос без сжатия
 func (router *Router) RespondData(w http.ResponseWriter, code int, data interface{}) {
+	rw, ok := w.(*responseWriterEx)
+	if !ok {
+		panic("internal error")
+	}
+
 	if code > 0 {
-		w.WriteHeader(code)
+		rw.WriteHeader(code)
 	}
 	if data != nil {
 		switch d := data.(type) {
 		case string:
-			_, _ = w.Write([]byte(d))
+			_, _ = rw.Write([]byte(d))
 
-			w.Header().Add("Content-Type", "application/octet-stream")
+			rw.Header().Add("Content-Type", "application/octet-stream")
 		default:
-			if err := json.NewEncoder(w).Encode(data); err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
-				_, _ = w.Write([]byte(fmt.Sprintf(`{"error": "%v"}`, err)))
+			if err := json.NewEncoder(rw).Encode(data); err != nil {
+				rw.WriteHeader(http.StatusInternalServerError)
+				_, _ = rw.Write([]byte(fmt.Sprintf(`{"error": "%v"}`, err)))
 
 				return
 			}
 
-			w.Header().Set("Content-Type", "application/json")
+			rw.Header().Set("Content-Type", "application/json")
 		}
 	} else {
-		_, _ = w.Write([]byte("{}"))
+		_, _ = rw.Write([]byte("{}"))
 	}
 }
 
@@ -187,7 +199,7 @@ func (router *Router) AddMiddleware(subroute string, mwf ...handler.MiddlewareFu
 }
 
 // StartSession ...
-func (router *Router) StartSession(w http.ResponseWriter, r *http.Request, userID uint64, sessionAge uint) error {
+func (router *Router) StartSession(w http.ResponseWriter, r *http.Request, userID uint64, sessionAge int) error {
 	// получаем сесиию
 	session, err := router.sessionStore.New(r, sessionName)
 	if err != nil {

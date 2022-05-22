@@ -4,18 +4,19 @@ go 1.18
 
 require (
 	github.com/BurntSushi/toml v1.1.0
+	github.com/gammazero/workerpool v1.1.2
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/gorilla/sessions v1.2.1
 	github.com/jackc/pgx/v4 v4.16.0
 	github.com/pkg/errors v0.8.1
 	github.com/sirupsen/logrus v1.8.1
 	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4
+	golang.org/x/time v0.0.0-20220411224347-583f2d630306
 )
 
 require (
 	github.com/felixge/httpsnoop v1.0.2 // indirect
 	github.com/gammazero/deque v0.1.0 // indirect
-	github.com/gammazero/workerpool v1.1.2 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/lib/pq v1.10.2 // indirect
 )

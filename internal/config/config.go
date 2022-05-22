@@ -7,24 +7,26 @@ import (
 
 // Config logserver.toml
 type Config struct {
-	SuperAdminID            uint64
+	SuperAdminID            int
 	Host                    string `toml:"HOST"`
 	Port                    string `toml:"PORT"`
 	SuperAdminLogin         string `toml:"SUPERADMIN_LOGIN"`
 	SuperPassword           string `toml:"SUPERADMIN_PASSWORD"`
-	SessionAge              uint   `toml:"SESSION_AGE"`
+	SessionAge              int    `toml:"SESSION_AGE"`
 	LogLevel                string `toml:"LOG_LEVEL"`
 	DatabaseURL             string `toml:"DATABASE_URL"`
 	SessionEncriptionKey    string `toml:"SESSION_ENCRYPTION_KEY"`
-	MaxDbSessions           uint   `toml:"MAX_DB_SESSIONS"`
-	MaxDbSessionIdleTimeSec uint   `toml:"MAX_DB_SESSION_IDLE_TIME_SEC"`
-	MaxLogRecordsResult     uint   `toml:"MAX_LOG_RECORDS_RESULT"`
-	MaxLogRecordsResultWeb  uint   `toml:"MAX_LOG_RECORDS_RESULT_WEB"`
+	MaxDbSessions           int    `toml:"MAX_DB_SESSIONS"`
+	MaxDbSessionIdleTimeSec int    `toml:"MAX_DB_SESSION_IDLE_TIME_SEC"`
+	MaxLogRecordsResult     int    `toml:"MAX_LOG_RECORDS_RESULT"`
+	MaxLogRecordsResultWeb  int    `toml:"MAX_LOG_RECORDS_RESULT_WEB"`
 	PasswordRegex           string `toml:"PASSWORD_REGEX"`
 	PasswordRegexError      string `toml:"PASSWORD_REGEX_ERROR"`
-	HttpReadTimeout         uint   `toml:"HTTP_READ_TIMEOUT"`
-	HttpWriteTimeout        uint   `toml:"HTTP_WRITE_TIMEOUT"`
-	HttpShutdownTimeout     uint   `toml:"HTTP_SHUTDOWN_TIMEOUT"`
+	HttpReadTimeout         int    `toml:"HTTP_READ_TIMEOUT"`
+	HttpWriteTimeout        int    `toml:"HTTP_WRITE_TIMEOUT"`
+	HttpShutdownTimeout     int    `toml:"HTTP_SHUTDOWN_TIMEOUT"`
+	RateLimit               int    `toml:"RATE_LIMIT"`
+	RateLimitBurst          int    `toml:"RATE_LIMIT_BURST"`
 }
 
 const (

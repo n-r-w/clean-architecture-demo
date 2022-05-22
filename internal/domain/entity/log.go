@@ -12,7 +12,7 @@ type LogRecord struct {
 	ID       uint64    `json:"id"`
 	LogTime  time.Time `json:"logTime"`
 	RealTime time.Time `json:"realTime"`
-	Level    uint      `json:"level"`
+	Level    int       `json:"level"`
 	Message1 string    `json:"message1"`
 	Message2 string    `json:"message2"`
 	Message3 string    `json:"message3"`

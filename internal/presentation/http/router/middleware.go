@@ -3,8 +3,11 @@ package router
 import (
 	"context"
 	"net/http"
+	"strings"
+	"time"
 
 	"github.com/google/uuid"
+	"github.com/n-r-w/log-server-v2/pkg/logger"
 )
 
 // Реализует интерфейс http.ResponseWriter
@@ -38,9 +41,9 @@ func (router *Router) logRequest(next http.Handler) http.Handler {
 				r.RemoteAddr,
 				r.Context().Value(ctxKeyRequestID),
 				r.Method,
-				r.RequestURI)
+				r.RequestURI)*/
 
-			start := time.Now() */
+		start := time.Now()
 		rw := &responseWriterEx{
 			ResponseWriter: w,
 			code:           http.StatusOK,
@@ -49,32 +52,34 @@ func (router *Router) logRequest(next http.Handler) http.Handler {
 
 		// вызываем обработчик нижнего уровня
 		next.ServeHTTP(rw, r)
-		/*
-			// выводим в журнал результат
-			var level logger.MessageLevel
-			switch {
-			case rw.code >= http.StatusInternalServerError:
-				level = logger.ErrorLevel
-			case rw.code >= http.StatusBadRequest:
-				level = logger.WarnLevel
-			default:
-				level = logger.InfoLevel
-			}
 
-			var errorText string
-			if rw.err != nil {
-				errorText = rw.err.Error()
-				errorText = strings.ReplaceAll(errorText, `"`, "")
-			} else {
-				errorText = "-"
-			}
+		// выводим в журнал результат
+		var level logger.MessageLevel
+		switch {
+		case rw.code >= http.StatusInternalServerError:
+			level = logger.ErrorLevel
+		case rw.code >= http.StatusBadRequest:
+			level = logger.WarnLevel
+		default:
+			level = logger.InfoLevel
+		}
 
-			router.logger.Level(level, "addr: %s, id: %s, completed with %d %s in %v, info: %s",
+		var errorText string
+		if rw.err != nil {
+			errorText = rw.err.Error()
+			errorText = strings.ReplaceAll(errorText, `"`, "")
+		} else {
+			errorText = "-"
+		}
+
+		if level == logger.ErrorLevel || level == logger.WarnLevel {
+			router.logger.Level(level, "addr: %s, completed with %d %s in %v, info: %s",
 				r.RemoteAddr,
-				r.Context().Value(ctxKeyRequestID),
+				// r.Context().Value(ctxKeyRequestID),
 				rw.code,
 				http.StatusText(rw.code),
 				time.Since(start),
-				errorText) */
+				errorText)
+		}
 	})
 }
