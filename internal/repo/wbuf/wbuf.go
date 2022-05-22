@@ -48,7 +48,7 @@ func (d *Dispatcher) Insert(records []entity.LogRecord) error {
 
 	for {
 		if d.pool.WaitingQueueSize() > d.pool.Size()*2 {
-			time.Sleep(time.Microsecond)
+			time.Sleep(time.Millisecond)
 		} else {
 			break
 		}
