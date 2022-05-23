@@ -27,6 +27,7 @@ func NewDispatcher(workerCount int, rateLimit int, rateLimitBurst int, dbRepo us
 		pool:    workerpool.New(workerCount),
 	}
 
+	// Вывод в фоновом режиме информации о размере буфера раз в секунду
 	go func() {
 		for {
 			size := d.pool.WaitingQueueSize()
@@ -42,10 +43,12 @@ func NewDispatcher(workerCount int, rateLimit int, rateLimitBurst int, dbRepo us
 
 // Insert - реализация интерфейса usecase.LogInterface
 func (d *Dispatcher) Insert(records []entity.LogRecord) error {
+	// Защита от DDOS и в целом от перегрузки сервера БД запросами
 	if !d.limiter.Allow() {
 		return fmt.Errorf("too many requests")
 	}
-
+	// Контроль за размером очереди пула задач. Если дать ему бескотрольно расти, то можно остаться без свободных ресурсов
+	// Фактически тут мы искусственно увеличиваем время отклика входящих запросов при переполнении очереди задач
 	for {
 		if d.pool.WaitingQueueSize() > d.pool.Size()*2 {
 			time.Sleep(time.Millisecond)
@@ -53,7 +56,7 @@ func (d *Dispatcher) Insert(records []entity.LogRecord) error {
 			break
 		}
 	}
-
+	// Отправляем задачу на асинхронную обработку
 	d.pool.Submit(func() {
 		if err := d.dbRepo.Insert(records); err != nil {
 			d.log.Error("worker error: %v", err)
