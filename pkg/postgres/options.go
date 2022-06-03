@@ -10,12 +10,6 @@ func MaxConns(n int) Option {
 	}
 }
 
-func MaxPoolSize(n int) Option {
-	return func(p *Postgres) {
-		p.maxPoolSize = n
-	}
-}
-
 func ConnAttempts(n int) Option {
 	return func(p *Postgres) {
 		p.connAttempts = n

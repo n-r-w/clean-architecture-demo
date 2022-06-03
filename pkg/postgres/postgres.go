@@ -12,7 +12,6 @@ import (
 
 const (
 	defaultMaxConns           = 10
-	defaultmaxPoolSize        = 10
 	defaultConnAttempts       = 10
 	defaultMaxMaxConnIdleTime = time.Second
 	defaultConnTimeout        = time.Second * 5
@@ -22,7 +21,6 @@ const (
 
 type Postgres struct {
 	maxConns           int
-	maxPoolSize        int
 	connAttempts       int
 	maxMaxConnIdleTime time.Duration
 	connTimeout        time.Duration
@@ -35,7 +33,6 @@ type Postgres struct {
 func New(url string, logger logger.Interface, options ...Option) (*Postgres, error) {
 	pg := &Postgres{
 		maxConns:           defaultMaxConns,
-		maxPoolSize:        defaultmaxPoolSize,
 		connAttempts:       defaultConnAttempts,
 		maxMaxConnIdleTime: defaultMaxMaxConnIdleTime,
 		connTimeout:        defaultConnTimeout,
@@ -52,7 +49,6 @@ func New(url string, logger logger.Interface, options ...Option) (*Postgres, err
 		return nil, fmt.Errorf("pgxpool parse config error: %v", err)
 	}
 
-	poolConfig.MaxConns = int32(pg.maxPoolSize)
 	poolConfig.MaxConnIdleTime = pg.maxMaxConnIdleTime
 	poolConfig.MaxConns = int32(pg.maxConns)
 

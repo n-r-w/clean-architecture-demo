@@ -13,15 +13,15 @@ func main() {
 
 	var configPath string
 	// описание флагов командной строки
-	flag.StringVar(&configPath, "config-path", "config/server.toml", "path to config file")
+	flag.StringVar(&configPath, "config-path", "", "path to config file")
 
 	// обработка командной строки
 	flag.Parse()
 
 	// читаем конфиг
-	cfg, err := config.New(configPath)
+	cfg, err := config.New(configPath, lg)
 	if err != nil {
-		lg.Fatal("read config error %v", err)
+		lg.Fatal("read config error: %v", err)
 
 		return
 	}

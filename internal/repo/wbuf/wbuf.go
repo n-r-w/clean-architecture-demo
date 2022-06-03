@@ -32,13 +32,17 @@ func NewDispatcher(workerCount int, rateLimit int, rateLimitBurst int, dbRepo us
 		for {
 			size := d.pool.WaitingQueueSize()
 			if size > d.pool.Size()*2 {
-				d.log.Info("queue size: %d", size)
+				d.log.Info("queue size: %d, pool size: %d", size, d.dbRepo.PoolSize())
 			}
 			time.Sleep(time.Second)
 		}
 	}()
 
 	return d
+}
+
+func (d *Dispatcher) PoolSize() int {
+	return d.dbRepo.PoolSize()
 }
 
 // Insert - реализация интерфейса usecase.LogInterface

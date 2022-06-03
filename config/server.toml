@@ -11,17 +11,15 @@ SESSION_AGE = 9999
 # уровень отладки
 LOG_LEVEL = "debug"
 # строка подключения к БД
-DATABASE_URL = "host=localhost user=postgres password=1 port=5433 dbname=kp_logs sslmode=disable connect_timeout=15000 statement_timeout=15000"
+DATABASE_URL = "host=192.168.1.71 user=postgres password=1 port=5432 dbname=kp_logs sslmode=disable connect_timeout=15000"
 # Максимальное количество сессий БД
-MAX_DB_SESSIONS = 50
+MAX_DB_SESSIONS = 80
 # Время жизни незадействованного соединения к БД
 MAX_DB_SESSION_IDLE_TIME_SEC = 10
 # Ключ шифрования куки
 SESSION_ENCRYPTION_KEY = "e09469b1507d0e7a98831750aff903e0831a428f9addf3cfa348fa64dcfb249a0f8c666f8dda6315c19c5ed946d89703a134db0eae8b4632d063b4a06207b8a3"
 # Максимальное количество записей лога, возвращающемое по запросу
 MAX_LOG_RECORDS_RESULT = 999999999
-# Максимальное количество записей лога, возвращающемое по запросу с веба
-MAX_LOG_RECORDS_RESULT_WEB = 10000
 # Таймаут на чтение для HTTP сервера в секундах
 HTTP_READ_TIMEOUT = 99999
 # Таймаут на запись для HTTP сервера в секундах

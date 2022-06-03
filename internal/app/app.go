@@ -19,7 +19,9 @@ import (
 
 func Start(cfg *config.Config, logger logger.Interface) {
 	// создаем доступ к БД
-	pg, err := postgres.New(cfg.DatabaseURL, logger)
+	pg, err := postgres.New(cfg.DatabaseURL, logger,
+		postgres.MaxConns(cfg.MaxDbSessions),
+		postgres.MaxMaxConnIdleTime(time.Duration(cfg.MaxDbSessionIdleTimeSec)*time.Second))
 	if err != nil {
 		logger.Error("postgress error: %v", err)
 

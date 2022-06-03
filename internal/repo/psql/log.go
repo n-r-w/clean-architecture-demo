@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/jackc/pgx/v4"
 	"github.com/n-r-w/log-server-v2/internal/domain/entity"
 	"github.com/n-r-w/log-server-v2/pkg/postgres"
 )
@@ -22,6 +23,10 @@ func NewLog(pg *postgres.Postgres, maxLogRecordsResult int) *logRepo {
 	}
 }
 
+func (p *logRepo) PoolSize() int {
+	return int(p.Pool.Stat().TotalConns())
+}
+
 func (p *logRepo) Insert(records []entity.LogRecord) error {
 	var sqlText string
 
@@ -36,7 +41,9 @@ func (p *logRepo) Insert(records []entity.LogRecord) error {
 			t, lr.Level, lr.Message1, lr.Message2, lr.Message3)
 	}
 
-	_, err := p.Pool.Exec(context.Background(), sqlText)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+	_, err := p.Pool.Exec(ctx, sqlText, pgx.QuerySimpleProtocol(true))
 
 	return err
 }
