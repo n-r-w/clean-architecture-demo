@@ -1,4 +1,4 @@
-.PHONY: build test run runbuild proto rebuild tidy race docker-up docker-down
+.PHONY: build test run runbuild proto rebuild tidy race docker-up docker-down docker-attach
 
 build:
 	go build -v -o . ./cmd/logserver
@@ -26,5 +26,8 @@ docker-up:
 
 docker-down:
 	docker-compose down
+
+docker-attach:
+	docker attach --sig-proxy=false log-server-v2_logserver_1
 
 .DEFAULT_GOAL := run
